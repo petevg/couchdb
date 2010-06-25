@@ -55,29 +55,6 @@ couchTests.oauth_users_db = function(debug) {
   }
 
 
-  function createUserDocs() {
-    var fdmanana = CouchDB.prepareUserDoc({
-      name: "fdmanana",
-      roles: ["dev"],
-      oauth: {
-        consumer_keys: {
-          "key_foo": "bar"
-        },
-        tokens: {
-          "tok1": "123"
-        }
-      }
-    }, "qwerty");
-
-    T(usersDb.save(fdmanana).ok);
-
-    var jchris = CouchDB.prepareUserDoc({
-      name: "jchris",
-      roles: ["dev", "mafia"]
-    }, "white_costume");
-  }
-
-
   // this function will be called on the modified server
   var testFun = function () {
     var fdmanana = CouchDB.prepareUserDoc({
@@ -128,6 +105,7 @@ couchTests.oauth_users_db = function(debug) {
       T(typeof data.userCtx === "object");
       T(data.userCtx.name === "fdmanana");
       T(data.userCtx.roles[0] === "dev");
+      T(data.info.authenticated === "oauth");
 
       // test invalid token
       message.parameters.oauth_token = "not a token!";
@@ -135,6 +113,19 @@ couchTests.oauth_users_db = function(debug) {
         message, accessor
       );
       T(xhr.status === 400, "Request should be invalid.");
+
+      // test invalid secret
+      message.parameters.oauth_token = "tok1";
+      accessor.tokenSecret = "badone";
+      xhr = oauthRequest("GET", "http://" + host + "/_session",
+        message, accessor
+      );
+      data = JSON.parse(xhr.responseText);
+      T(data.userCtx.name === null);
+      T(data.userCtx.roles.length === 1);
+      T(data.userCtx.roles[0] === "_admin");
+      T(data.info.authentication_handlers.indexOf("default") >= 0);
+      T(data.info.authenticated === "default");
     }
   };
 

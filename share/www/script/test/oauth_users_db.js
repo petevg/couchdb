@@ -141,7 +141,10 @@ couchTests.oauth_users_db = function(debug) {
      {section: "couch_httpd_auth",
       key: "authentication_db", value: usersDb.name},
      {section: "couch_httpd_oauth",
-      key: "use_user_db", value: "true"}
+      key: "use_user_db", value: "true"},
+     {section: "httpd", key: "authentication_handlers",
+      value: "{couch_httpd_oauth, oauth_authentication_handler}, " +
+        "{couch_httpd_auth, default_authentication_handler}"}
     ],
     testFun
   );

@@ -214,7 +214,7 @@ access_token_info(Token) ->
     end.
 
 use_auth_db() ->
-    case couch_config:get("couch_httpd_oauth", "use_user_db", "false") of
+    case couch_config:get("couch_httpd_oauth", "use_user_db", "true") of
     "false" ->
         nil;
     "true" ->

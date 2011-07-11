@@ -99,8 +99,8 @@ function CouchDB(name, httpHeaders) {
         newCount++;
       }
     }
-    var newUuids = CouchDB.newUuids(docs.length);
-    var newCount = 0;
+    var newUuids = CouchDB.newUuids(docs.length, undefined, headers);
+    var newCount = 0
     for (var i=0; i<docs.length; i++) {
       if (docs[i]._id == undefined) {
         docs[i]._id = newUuids.pop();
